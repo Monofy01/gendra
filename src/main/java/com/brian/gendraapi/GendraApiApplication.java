@@ -14,15 +14,15 @@ public class GendraApiApplication {
 
 
         SpringApplication.run(GendraApiApplication.class, args);
-
-        SuggestionRepositoryImpl repo = new SuggestionRepositoryImpl();
-
-        SuggestionService test = new SuggestionService(repo);
-        try {
-            test.searchCities("Cranberry Township", 40.68496, -79.10714);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//
+//        SuggestionRepositoryImpl repo = new SuggestionRepositoryImpl();
+//
+//        SuggestionService test = new SuggestionService(repo);
+//        try {
+//            test.searchCities("Londo", 43.70011, -79.4163);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
     }
 
 

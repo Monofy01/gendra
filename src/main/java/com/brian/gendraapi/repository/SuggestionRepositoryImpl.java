@@ -20,8 +20,13 @@ import java.util.stream.Collectors;
 public class SuggestionRepositoryImpl implements SuggestionRepository {
 
     @Override
-    public void searchCities(String q, double latitude, double longitude) throws FileNotFoundException {
+    public List<Suggestion> searchCities(String q, double latitude, double longitude) throws FileNotFoundException {
 
+
+        if (!(latitude >= -90 && latitude <= 90) || !(longitude >= -180 && longitude <= 180)) {
+            List<Suggestion> empty = Collections.emptyList();
+            return empty;
+        }
 
         // URl TSV
         String url = "src/main/resources/static/cities_canada-usa.tsv";
@@ -105,18 +110,15 @@ public class SuggestionRepositoryImpl implements SuggestionRepository {
                 ));
             });
 
-            List<Suggestion> sortedList = suggestions.stream()
+            return suggestions.stream()
                     .sorted(Comparator.comparingDouble(Suggestion::getScore).reversed())
                     .collect(Collectors.toList());
 
-            for (Suggestion suggestion : sortedList) {
-                System.out.println(suggestion);
-            }
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return Collections.emptyList();
         }
 
-//        return Optional.empty();
+
     }
 }
