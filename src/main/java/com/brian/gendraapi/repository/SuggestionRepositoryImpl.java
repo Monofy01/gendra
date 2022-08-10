@@ -10,7 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,12 +23,11 @@ import java.util.stream.Collectors;
 public class SuggestionRepositoryImpl implements SuggestionRepository {
 
     @Override
-    public List<Suggestion> searchCities(String q, double latitude, double longitude) throws FileNotFoundException {
+    public List<Suggestion> searchCities(String q, double latitude, double longitude) {
 
-
+        // check values from request
         if (!(latitude >= -90 && latitude <= 90) || !(longitude >= -180 && longitude <= 180)) {
-            List<Suggestion> empty = Collections.emptyList();
-            return empty;
+            return Collections.emptyList();
         }
 
         // URl TSV
@@ -50,52 +52,15 @@ public class SuggestionRepositoryImpl implements SuggestionRepository {
                 return mat.matches();
             }).forEach(row -> {
                 double globalScore = 0.0;
-                StringBuilder name = new StringBuilder();
-                name.append(row[1]).append(", ").append(row[10]).append(", ").append(row[8]);
-
 
                 // FIRST SCORE
                 globalScore = FuzzySearch.ratio(q, row[1]);
 
+                // SECOND SCORE
+                globalScore += calculateScoreL("lat", latitude, Double.parseDouble(row[4]));
 
-                // parsing data coords from tsv
-                double latitudeTSV = Double.parseDouble(row[4]);
-                double longitudeTSV = Double.parseDouble(row[5]);
-
-                // Helper variables
-                double x_1, x_3, h1, h2;
-
-
-                // LONGITUDE RATING SCORES
-                x_1 = -180.00;
-                x_3 = 180.00;
-
-                h1 = Math.abs(longitude - (x_1));
-                h2 = Math.abs(x_3 - (longitude));
-
-                if (longitude > longitudeTSV) {
-                    globalScore += (((Math.abs(longitudeTSV - (x_1))) * 100) / h1);
-                } else if (longitude < longitudeTSV) {
-                    globalScore += (((Math.abs(x_3 - (longitudeTSV))) * 100) / h2);
-                } else {
-                    globalScore += 100;
-                }
-
-                // LATITUDE RATING SCORES
-                x_1 = -90.00;
-                x_3 = 90.00;
-
-                h1 = Math.abs(latitude - (x_1));
-                h2 = Math.abs(x_3 - (latitude));
-
-                if (latitude > latitudeTSV) {
-                    globalScore += (((Math.abs(latitudeTSV - (x_1))) * 100) / h1);
-                } else if (latitude < latitudeTSV) {
-                    globalScore += (((Math.abs(x_3 - (latitudeTSV))) * 100) / h2);
-                } else {
-                    globalScore += 100;
-                }
-
+                // THIRD SCORE
+                globalScore += calculateScoreL("lon", longitude, Double.parseDouble(row[5]));
 
                 // Set scale for decimal places
                 BigDecimal bd = new BigDecimal(Double.toString((globalScore / 3) / 100));
@@ -103,13 +68,15 @@ public class SuggestionRepositoryImpl implements SuggestionRepository {
                 globalScore = bd.doubleValue();
 
                 suggestions.add(new Suggestion(
-                        name.toString(),
+                        row[1] + ", " + row[10] + ", " + row[8],
                         Double.parseDouble(row[4]),
                         Double.parseDouble(row[5]),
                         globalScore
                 ));
+
             });
 
+            // sort descending order
             return suggestions.stream()
                     .sorted(Comparator.comparingDouble(Suggestion::getScore).reversed())
                     .collect(Collectors.toList());
@@ -121,4 +88,41 @@ public class SuggestionRepositoryImpl implements SuggestionRepository {
 
 
     }
+
+    private double calculateScoreL(String type, double x_2, double x_4) {
+
+        // Helper variables
+        double h1, h2;
+        double result = 0.0;
+
+        // max values
+        double x_1;
+        double x_3;
+
+        // process by type
+        if (type.equals("lat")) {
+            x_1 = -90.00;
+            x_3 = 90.00;
+        } else if (type.equals("lon")) {
+            x_1 = -180.00;
+            x_3 = 180.00;
+        } else {
+            return 0.0;
+        }
+
+        // distance between point and max-min values
+        h1 = Math.abs(x_2 - (x_1));
+        h2 = Math.abs(x_3 - (x_2));
+
+        // calculate accuracy
+        if (x_2 > x_4) {
+            return (((Math.abs(x_4 - (x_1))) * 100) / h1);
+        } else if (x_2 < x_4) {
+            return (((Math.abs(x_3 - (x_4))) * 100) / h2);
+        } else {
+            return 100.00;
+        }
+    }
+
+
 }

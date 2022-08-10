@@ -23,14 +23,13 @@ public class SuggestionController {
 
     @GetMapping("/suggestions")
     public ResponseEntity<List<Suggestion>> searchSuggestedCities(@RequestParam String q, @RequestParam double latitude, @RequestParam double longitude) {
-//        return "hola " + q + latitude;
         try {
             List<Suggestion> suggestionList = suggestionService.searchCities(q, latitude, longitude);
             return new ResponseEntity<List<Suggestion>>(suggestionList, HttpStatus.OK);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             List<Suggestion> emptyList = Collections.emptyList();
-            return new ResponseEntity<List<Suggestion>>(emptyList, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<List<Suggestion>>(emptyList, HttpStatus.BAD_REQUEST);
         }
     }
 
