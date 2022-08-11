@@ -51,9 +51,9 @@ Content-Type: application/json
 RESPONSE: HTTP 200 (Created)
 ```
 
-### To view Swagger 2 API docs
+### To view Swagger API docs
 
-Run the server and browse to localhost:8090/swagger-ui.html
+Run the server and browse to localhost:8080/swagger-ui.html
 
 # About Spring Boot
 
