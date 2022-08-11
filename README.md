@@ -49,7 +49,6 @@ Content-Type: application/json
 }
 
 RESPONSE: HTTP 200 (Created)
-Location header: http://localhost:8090/example/v1/hotels/1
 ```
 
 ### To view Swagger 2 API docs
