@@ -8,10 +8,13 @@ import java.io.Serializable;
 @Getter
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Suggestion implements Serializable  {
     private String name;
     private double latitude;
     private double longitude;
     private double score;
+
+
 }

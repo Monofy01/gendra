@@ -37,7 +37,16 @@ public class SuggestionRepositoryImpl implements SuggestionRepository {
         TsvParserSettings settings = new TsvParserSettings();
         TsvParser parser = new TsvParser(settings);
 
+        String data = "Londo";
+
+        String result = data.substring(0,1).toLowerCase() + data.substring(1);
+        System.out.println("DATA -> " + result);
+
+
         Pattern pat = Pattern.compile("^" + q + ".*");
+//        Pattern pat = Pattern.compile("^[" + "Londo" + "][.*");
+//      "^Londo"
+
         try {
 
             // list objects filtered
