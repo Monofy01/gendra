@@ -27,7 +27,7 @@ Once the application runs you should see something like this
 ## About the Service
 
 The service is just a REST API endpoint that provides auto-complete suggestions for large cities.
- in ```com.brian.gendraapi.SuggestionController``` on **port 8090**. (see below)
+ in ```com.brian.gendraapi.SuggestionController``` on **port 8080**. (see below)
 
 
 ### Some endpoints for controller (SuggestionController).
@@ -53,7 +53,7 @@ RESPONSE: HTTP 200 (Created)
 
 ### To view Swagger API docs
 
-Run the server and browse to localhost:8080/swagger-ui.html
+Run the server and browse to localhost:8090/swagger-ui.html
 
 # About Spring Boot
 
